@@ -1,5 +1,4 @@
 export function renderImages(array) {
-
     return array
     .map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads}) =>
          `<li class="gallery-item">
