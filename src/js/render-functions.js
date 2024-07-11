@@ -1,25 +1,24 @@
-const galleryList = document.querySelector(".gallery");
-function renderImages(images) {
-    const markup = images
-    .map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads}) => {
-        return `
-            <li class="gallery-item">
-            <a class="gallery-link" href="${webformatURL}">
+export function renderImages(array) {
+
+    return array
+    .map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads}) =>
+         `<li class="gallery-item">
+            <a class="gallery-link" href="${largeImageURL}">
             <img
             class="gallery-image"
             src="${webformatURL}"
             data-source="${largeImageURL}"
             alt="${tags}"
             width="360px"
-            height="200px"
             />
             </a>
-            <p><b>Likes</b>: ${likes}</p>
-            <p><b>Views</b>: ${views}</p>
-            <p><b>Comments</b>: ${comments}</p>
-            <p><b>Downloads</b>: ${downloads}</p>
-            </li>`
-      })
-      .join("");
-    galleryList.insertAdjacentHTML("beforeend", markup);
+            <div class="info-box">
+                <p>Like: <span>${likes}</span></p>
+                <p>Views: <span>${views}</span></p>
+                <p>Comments: <span>${comments}</span></p>
+                <p>Downloads: <span>${downloads}</span></p>
+            </div>
+        </li>`
+      )
+    .join("");
   }
