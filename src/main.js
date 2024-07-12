@@ -5,18 +5,27 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 import { fetchImages } from "./js/pixabay-api";
 import { renderImages } from "./js/render-functions";
 
-const links = document.querySelectorAll(".gallery-link");
 const form = document.querySelector(".form");
 const galleryList = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
-    loader.style.opacity = "1";
-    if (event.target.elements.query.value === "") {
+    const searchValue = event.target.elements.query.value.trim();
+    if (searchValue === "") {
+        iziToast.error({
+            title: '',
+            icon: '',
+            message: 'Please enter something to search images!',
+            position: 'topCenter',
+            backgroundColor: "#ef4040",
+            titleColor: "#fff",
+            messageColor: "#fff"
+            })
         return;
-    } else {
-        fetchImages(event.target.elements.query.value)
+    }
+        loader.style.opacity = 1;
+        fetchImages(searchValue)
         .then((images) => {
             if (images.hits.length === 0) {
                 iziToast.error({
@@ -31,6 +40,7 @@ form.addEventListener("submit", (event) => {
             } else {
                 galleryList.innerHTML = "";
                 galleryList.insertAdjacentHTML("beforeend", renderImages(images.hits));
+                const links = document.querySelectorAll(".gallery-link");
                 links.forEach(link => link.addEventListener("click", event => event.preventDefault()));
                 const lightbox = new SimpleLightbox('.gallery a', {
                     captionsData: "alt",
@@ -39,7 +49,7 @@ form.addEventListener("submit", (event) => {
                 });
                 lightbox.refresh();
             }
-        })
+    })
         .catch((error) => iziToast.error({
             title: '',
             icon: '',
@@ -49,7 +59,8 @@ form.addEventListener("submit", (event) => {
             titleColor: "#fff",
             messageColor: "#fff"
             })
-        )
-        loader.style.opacity = "0";
+        ).finally(() => {
+            loader.style.opacity = 0;
+        })
     }
-  });
+);
