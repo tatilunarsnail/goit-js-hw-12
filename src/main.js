@@ -24,7 +24,7 @@ form.addEventListener("submit", (event) => {
             })
         return;
     }
-        loader.style.opacity = 1;
+        loader.style.display = "inline-block";
         fetchImages(searchValue)
         .then((images) => {
             if (images.hits.length === 0) {
@@ -60,7 +60,7 @@ form.addEventListener("submit", (event) => {
             messageColor: "#fff"
             })
         ).finally(() => {
-            loader.style.opacity = 0;
+            loader.style.display = "none";
         })
     }
 );
