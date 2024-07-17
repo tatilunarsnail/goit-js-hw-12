@@ -5,6 +5,8 @@ import{a as k,i as a,S as m}from"./assets/vendor-c493984e.js";(function(){const 
               src="${t}"
               data-source="${n}"
               alt="${s}"
+              width="360px"
+              height="152px"
               />
               </a>
               <div class="info-box">
