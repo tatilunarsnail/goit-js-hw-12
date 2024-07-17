@@ -8,10 +8,17 @@ import { renderImages } from "./js/render-functions";
 const form = document.querySelector(".form");
 const galleryList = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
+const fetchImagesBtn = document.querySelector(".fetch-more-btn");
 
-form.addEventListener("submit", (event) => {
+let searchValue = '';
+let totalHits = 0;
+let loadedHits = 0;
+
+fetchImagesBtn.style.display = "none";
+
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const searchValue = event.target.elements.query.value.trim();
+    searchValue = event.target.elements.query.value.trim();
     if (searchValue === "") {
         iziToast.error({
             title: '',
@@ -21,12 +28,17 @@ form.addEventListener("submit", (event) => {
             backgroundColor: "#ef4040",
             titleColor: "#fff",
             messageColor: "#fff"
-            })
+        });
         return;
     }
     loader.style.display = "inline-block";
-    fetchImages(searchValue)
-    .then((images) => {
+    fetchImagesBtn.style.display = "none";
+    totalHits = 0;
+    loadedHits = 0;
+    try {
+        const images = await fetchImages(searchValue);
+        totalHits = images.totalHits;
+        loadedHits = images.hits.length;
         galleryList.innerHTML = "";
         if (images.hits.length === 0) {
             iziToast.error({
@@ -37,7 +49,7 @@ form.addEventListener("submit", (event) => {
                 backgroundColor: "#ef4040",
                 titleColor: "#fff",
                 messageColor: "#fff"
-                })
+            });
         } else {
             galleryList.insertAdjacentHTML("beforeend", renderImages(images.hits));
             const links = document.querySelectorAll(".gallery-link");
@@ -48,18 +60,69 @@ form.addEventListener("submit", (event) => {
                 captionDelay: 250
             });
             lightbox.refresh();
+            if (loadedHits < totalHits) {
+                fetchImagesBtn.style.display = "block";
+            }
         }
-    })
-    .catch((error) => iziToast.error({
-        title: '',
-        icon: '',
-        message: `${error}`,
-        position: 'topCenter',
-        backgroundColor: "#ef4040",
-        titleColor: "#fff",
-        messageColor: "#fff"
-        })
-    ).finally(() => {
+    } catch (error) {
+        iziToast.error({
+            title: '',
+            icon: '',
+            message: `${error}`,
+            position: 'topCenter',
+            backgroundColor: "#ef4040",
+            titleColor: "#fff",
+            messageColor: "#fff"
+        });
+    } finally {
         loader.style.display = "none";
-    })
+    }
+});
+
+fetchImagesBtn.addEventListener("click", async () => {
+    loader.style.display = "inline-block";
+    try {
+        const images = await fetchImages(searchValue);
+        loadedHits += images.hits.length;
+        if (loadedHits >= totalHits) {
+            fetchImagesBtn.style.display = "none";
+            iziToast.info({
+                title: '',
+                icon: '',
+                message: "We're sorry, but you have reached the end of search results.",
+                position: 'topCenter',
+                backgroundColor: "#ef4040",
+                titleColor: "#fff",
+                messageColor: "#fff"
+            });
+        } else {
+            galleryList.insertAdjacentHTML("beforeend", renderImages(images.hits));
+            const links = document.querySelectorAll(".gallery-link");
+            links.forEach(link => link.addEventListener("click", event => event.preventDefault()));
+            const lightbox = new SimpleLightbox('.gallery a', {
+                captionsData: "alt",
+                captionPosition: "bottom",
+                captionDelay: 250
+            });
+            lightbox.refresh();
+
+            const { height: cardHeight } = document.querySelector('.gallery-item').getBoundingClientRect();
+            window.scrollBy({
+                top: cardHeight * 2,
+                behavior: 'smooth'
+            });
+        }
+    } catch (error) {
+        iziToast.error({
+            title: '',
+            icon: '',
+            message: `${error}`,
+            position: 'topCenter',
+            backgroundColor: "#ef4040",
+            titleColor: "#fff",
+            messageColor: "#fff"
+        });
+    } finally {
+        loader.style.display = "none";
+    }
 });
