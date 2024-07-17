@@ -8,6 +8,8 @@ export function renderImages(array) {
               src="${webformatURL}"
               data-source="${largeImageURL}"
               alt="${tags}"
+              width="360px"
+              height="152px"
               />
               </a>
               <div class="info-box">
