@@ -28,6 +28,7 @@ form.addEventListener("submit", (event) => {
         fetchImages(searchValue)
         .then((images) => {
             if (images.hits.length === 0) {
+                galleryList.innerHTML = "";
                 iziToast.error({
                     title: '',
                     icon: '',
