@@ -84,6 +84,23 @@ fetchImagesBtn.addEventListener("click", async () => {
     try {
         const images = await fetchImages(searchValue);
         loadedHits += images.hits.length;
+        galleryList.insertAdjacentHTML("beforeend", renderImages(images.hits));
+        const links = document.querySelectorAll(".gallery-link");
+        links.forEach(link => link.addEventListener("click", event => event.preventDefault()));
+
+        const lightbox = new SimpleLightbox('.gallery a', {
+            captionsData: "alt",
+            captionPosition: "bottom",
+            captionDelay: 250
+        });
+        lightbox.refresh();
+
+        const { height: cardHeight } = document.querySelector('.gallery-item').getBoundingClientRect();
+        window.scrollBy({
+            top: cardHeight * 2,
+            behavior: 'smooth'
+        });
+
         if (loadedHits >= totalHits) {
             fetchImagesBtn.style.display = "none";
             iziToast.info({
@@ -94,22 +111,6 @@ fetchImagesBtn.addEventListener("click", async () => {
                 backgroundColor: "#ef4040",
                 titleColor: "#fff",
                 messageColor: "#fff"
-            });
-        } else {
-            galleryList.insertAdjacentHTML("beforeend", renderImages(images.hits));
-            const links = document.querySelectorAll(".gallery-link");
-            links.forEach(link => link.addEventListener("click", event => event.preventDefault()));
-            const lightbox = new SimpleLightbox('.gallery a', {
-                captionsData: "alt",
-                captionPosition: "bottom",
-                captionDelay: 250
-            });
-            lightbox.refresh();
-
-            const { height: cardHeight } = document.querySelector('.gallery-item').getBoundingClientRect();
-            window.scrollBy({
-                top: cardHeight * 2,
-                behavior: 'smooth'
             });
         }
     } catch (error) {
