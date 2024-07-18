@@ -38,6 +38,7 @@ input {
 }
 .gallery {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   column-gap: 24px;
   row-gap: 24px;
